@@ -3,12 +3,10 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    // Get random prompt
+    // Get all prompts
     const { data: prompts, error: promptError } = await supabase
       .from('prompts')
-      .select('*')
-      .limit(1)
-      .order('created_at', { ascending: false });
+      .select('*');
 
     if (promptError || !prompts || prompts.length === 0) {
       return NextResponse.json(
@@ -17,7 +15,8 @@ export async function GET() {
       );
     }
 
-    const selectedPrompt = prompts[0];
+    // Pick a random prompt
+    const selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
 
     // Get two random outputs for this prompt
     const { data: outputs, error: outputsError } = await supabase

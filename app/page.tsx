@@ -20,6 +20,26 @@ export default function Home() {
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Calculate appropriate font size based on ASCII art dimensions
+  const calculateFontSize = (ascii: string) => {
+    const lines = ascii.split('\n').filter(line => line.trim().length > 0);
+    const lineCount = lines.length;
+    const maxLineLength = Math.max(...lines.map(line => line.length), 1);
+
+    // Container dimensions (accounting for padding)
+    const containerHeight = 400 - 64; // 400px - (p-8 = 32px top + 32px bottom)
+    const containerWidth = 500 - 64; // Approximate width - padding
+
+    // Calculate what font size would fit
+    // For monospace, char width ≈ 0.6 * font size, line height ≈ 1.2 * font size
+    const maxFontFromHeight = containerHeight / (lineCount * 1.2);
+    const maxFontFromWidth = containerWidth / (maxLineLength * 0.6);
+
+    const fontSize = Math.min(maxFontFromHeight, maxFontFromWidth, 12); // Cap at 12px max
+
+    return `${Math.max(4, fontSize)}px`;
+  };
+
   const fetchRandomPair = async () => {
     setLoading(true);
 
@@ -112,8 +132,8 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Option A */}
           <div className="flex flex-col gap-4">
-            <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-auto">
-              <pre className="text-xs leading-tight">
+            <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
+              <pre className="leading-tight" style={{ fontSize: calculateFontSize(outputA.ascii_art) }}>
 {outputA.ascii_art}
               </pre>
             </div>
@@ -129,8 +149,8 @@ export default function Home() {
 
           {/* Option B */}
           <div className="flex flex-col gap-4">
-            <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-auto">
-              <pre className="text-xs leading-tight">
+            <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
+              <pre className="leading-tight" style={{ fontSize: calculateFontSize(outputB.ascii_art) }}>
 {outputB.ascii_art}
               </pre>
             </div>
