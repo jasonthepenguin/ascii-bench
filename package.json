@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/jasonthepenguin/ascii-bench#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
     "next": "^15.5.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

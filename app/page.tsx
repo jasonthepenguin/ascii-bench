@@ -1,6 +1,95 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
+type AsciiOutput = {
+  id: string;
+  model: string;
+  ascii_art: string;
+  prompt_id: string;
+};
+
+type Prompt = {
+  id: string;
+  prompt_text: string;
+};
+
 export default function Home() {
+  const [outputA, setOutputA] = useState<AsciiOutput | null>(null);
+  const [outputB, setOutputB] = useState<AsciiOutput | null>(null);
+  const [prompt, setPrompt] = useState<Prompt | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRandomPair = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/random-pair');
+      if (!response.ok) {
+        console.error('Error fetching random pair');
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      setPrompt(data.prompt);
+      setOutputA(data.outputA);
+      setOutputB(data.outputB);
+    } catch (error) {
+      console.error('Error fetching random pair:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVote = async (winnerId: string) => {
+    if (!outputA || !outputB) return;
+
+    try {
+      const response = await fetch('/api/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          output_a_id: outputA.id,
+          output_b_id: outputB.id,
+          winner_id: winnerId,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Error recording vote');
+        return;
+      }
+
+      // Load next pair
+      fetchRandomPair();
+    } catch (error) {
+      console.error('Error recording vote:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRandomPair();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-6">
+        <p className="text-xl text-gray-600">Loading...</p>
+      </main>
+    );
+  }
+
+  if (!outputA || !outputB || !prompt) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-6">
+        <p className="text-xl text-gray-600">No outputs available</p>
+      </main>
+    );
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center pt-12 p-6">
       <div className="mb-12 text-center">
@@ -15,7 +104,7 @@ export default function Home() {
         <div className="mb-8 text-center">
           <p className="mb-4 text-lg text-gray-600">Which model did it better?</p>
           <div className="inline-block bg-gray-100 border-2 border-gray-300 rounded-lg px-8 py-4">
-            <p className="text-xl font-semibold text-gray-700">ASCII art of Spongebob</p>
+            <p className="text-xl font-semibold text-gray-700">{prompt.prompt_text}</p>
           </div>
         </div>
 
@@ -25,28 +114,14 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-auto">
               <pre className="text-xs leading-tight">
-{`                    ___
-                  /     \\
-                 |  O O  |
-                 |   <   |
-                 |  \\_/  |
-                  \\_____/
-                     |
-         \\O/         |
-          |      ____|____
-         / \\    |         |
-                |  [ ] [ ]|
-                |         |
-                |  [ ] [ ]|
-                |_________|
-                 |       |
-                 |       |
-                _|       |_
-                |_|     |_|`}
+{outputA.ascii_art}
               </pre>
             </div>
             <div className="flex justify-center">
-              <button className="w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+              <button
+                onClick={() => handleVote(outputA.id)}
+                className="w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Vote A
               </button>
             </div>
@@ -56,27 +131,14 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-auto">
               <pre className="text-xs leading-tight">
-{`          ____________
-         /            \\
-        /   O      O   \\
-       |                |
-       |       <        |
-       |    \\_____/     |
-       |     \\___/      |
-        \\______________/
-            ||  ||
-       ____ || _||___
-      |    |||        \\O
-      |    ||||         |
-      |____||||         |
-        |  ||||        / \\
-        |  ||||
-       /_\\||||/_\\
-      /___||||___\\`}
+{outputB.ascii_art}
               </pre>
             </div>
             <div className="flex justify-center">
-              <button className="w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
+              <button
+                onClick={() => handleVote(outputB.id)}
+                className="w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+              >
                 Vote B
               </button>
             </div>
@@ -85,7 +147,10 @@ export default function Home() {
 
         {/* Skip button */}
         <div className="flex justify-center">
-          <button className="w-full sm:w-auto px-8 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors">
+          <button
+            onClick={() => fetchRandomPair()}
+            className="w-full sm:w-auto px-8 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors"
+          >
             Skip
           </button>
         </div>
