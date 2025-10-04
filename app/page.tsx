@@ -18,7 +18,7 @@ export default function Home() {
   const [outputA, setOutputA] = useState<AsciiOutput | null>(null);
   const [outputB, setOutputB] = useState<AsciiOutput | null>(null);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Calculate appropriate font size based on ASCII art dimensions
   const calculateFontSize = (ascii: string) => {
@@ -42,6 +42,9 @@ export default function Home() {
 
   const fetchRandomPair = async () => {
     setLoading(true);
+    setOutputA(null);
+    setOutputB(null);
+    setPrompt(null);
 
     try {
       const response = await fetch('/api/random-pair');
@@ -94,22 +97,6 @@ export default function Home() {
     fetchRandomPair();
   }, []);
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6">
-        <p className="text-xl text-gray-600">Loading...</p>
-      </main>
-    );
-  }
-
-  if (!outputA || !outputB || !prompt) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-6">
-        <p className="text-xl text-gray-600">No outputs available</p>
-      </main>
-    );
-  }
-
   return (
     <main className="flex min-h-screen flex-col items-center pt-12 p-6">
       <div className="mb-12 text-center">
@@ -124,7 +111,13 @@ export default function Home() {
         <div className="mb-8 text-center">
           <p className="mb-4 text-lg text-gray-600">Which model did it better?</p>
           <div className="inline-block bg-gray-100 border-2 border-gray-300 rounded-lg px-8 py-4">
-            <p className="text-xl font-semibold text-gray-700">{prompt.prompt_text}</p>
+            {loading || !prompt ? (
+              <div className="w-64 h-8 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-700"></div>
+              </div>
+            ) : (
+              <p className="text-xl font-semibold text-gray-700">{prompt.prompt_text}</p>
+            )}
           </div>
         </div>
 
@@ -133,14 +126,19 @@ export default function Home() {
           {/* Option A */}
           <div className="flex flex-col gap-4">
             <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
-              <pre className="leading-tight" style={{ fontSize: calculateFontSize(outputA.ascii_art) }}>
+              {loading || !outputA ? (
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              ) : (
+                <pre className="leading-tight" style={{ fontSize: calculateFontSize(outputA.ascii_art) }}>
 {outputA.ascii_art}
-              </pre>
+                </pre>
+              )}
             </div>
             <div className="flex justify-center">
               <button
-                onClick={() => handleVote(outputA.id)}
-                className="w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={() => outputA && handleVote(outputA.id)}
+                disabled={loading || !outputA}
+                className="w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Vote A
               </button>
@@ -150,14 +148,19 @@ export default function Home() {
           {/* Option B */}
           <div className="flex flex-col gap-4">
             <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
-              <pre className="leading-tight" style={{ fontSize: calculateFontSize(outputB.ascii_art) }}>
+              {loading || !outputB ? (
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              ) : (
+                <pre className="leading-tight" style={{ fontSize: calculateFontSize(outputB.ascii_art) }}>
 {outputB.ascii_art}
-              </pre>
+                </pre>
+              )}
             </div>
             <div className="flex justify-center">
               <button
-                onClick={() => handleVote(outputB.id)}
-                className="w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors"
+                onClick={() => outputB && handleVote(outputB.id)}
+                disabled={loading || !outputB}
+                className="w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Vote B
               </button>
@@ -169,7 +172,8 @@ export default function Home() {
         <div className="flex justify-center">
           <button
             onClick={() => fetchRandomPair()}
-            className="w-full sm:w-auto px-8 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors"
+            disabled={loading}
+            className="w-full sm:w-auto px-8 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Skip
           </button>
