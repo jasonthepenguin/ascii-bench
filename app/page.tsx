@@ -148,8 +148,8 @@ export default function Home() {
                 <p className="font-bold text-lg">{outputA.model}</p>
                 <p className="text-sm text-gray-600">Config: {outputA.model_config || 'default'}</p>
                 {outputA.metadata?.reasoning_config && (
-                  <p className="text-sm text-blue-600 font-semibold">
-                    ⚡ Extended Thinking (max: {outputA.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                  <p className="text-sm text-gray-600 font-semibold">
+                    Extended Thinking (max: {outputA.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
                   </p>
                 )}
                 {outputA.metadata?.max_tokens && (
@@ -190,8 +190,8 @@ export default function Home() {
                 <p className="font-bold text-lg">{outputB.model}</p>
                 <p className="text-sm text-gray-600">Config: {outputB.model_config || 'default'}</p>
                 {outputB.metadata?.reasoning_config && (
-                  <p className="text-sm text-blue-600 font-semibold">
-                    ⚡ Extended Thinking (max: {outputB.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                  <p className="text-sm text-gray-600 font-semibold">
+                    Extended Thinking (max: {outputB.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
                   </p>
                 )}
                 {outputB.metadata?.max_tokens && (
