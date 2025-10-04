@@ -3,22 +3,36 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    // Get all prompts
-    const { data: prompts, error: promptError } = await supabase
+    // Step 1: Get only prompt IDs to minimize data transfer
+    const { data: allPrompts, error: promptError } = await supabase
       .from('prompts')
-      .select('*');
+      .select('id');
 
-    if (promptError || !prompts || prompts.length === 0) {
+    if (promptError || !allPrompts || allPrompts.length === 0) {
       return NextResponse.json(
         { error: 'No prompts found' },
         { status: 404 }
       );
     }
 
-    // Pick a random prompt
-    const selectedPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+    // Step 2: Pick random prompt (client-side is fine for small datasets)
+    const randomPrompt = allPrompts[Math.floor(Math.random() * allPrompts.length)];
 
-    // Get two random outputs for this prompt
+    // Step 3: Get the full prompt details
+    const { data: selectedPrompt, error: promptDetailError } = await supabase
+      .from('prompts')
+      .select('*')
+      .eq('id', randomPrompt.id)
+      .single();
+
+    if (promptDetailError || !selectedPrompt) {
+      return NextResponse.json(
+        { error: 'Error fetching prompt' },
+        { status: 500 }
+      );
+    }
+
+    // Step 4: Get outputs for this prompt
     const { data: outputs, error: outputsError } = await supabase
       .from('ascii_outputs')
       .select('*')
@@ -31,8 +45,13 @@ export async function GET() {
       );
     }
 
-    // Randomly select two different outputs
-    const shuffled = outputs.sort(() => 0.5 - Math.random());
+    // Step 5: Properly shuffle using Fisher-Yates algorithm
+    const shuffled = [...outputs];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
     const outputA = shuffled[0];
     const outputB = shuffled[1];
 
