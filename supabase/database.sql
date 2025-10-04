@@ -17,7 +17,8 @@ CREATE TABLE ascii_outputs (
   vote_count INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   metadata JSONB DEFAULT '{}'::jsonb,
-  CONSTRAINT unique_prompt_model UNIQUE (prompt_id, model)
+  model_config TEXT DEFAULT 'default',
+  CONSTRAINT unique_prompt_model_config UNIQUE (prompt_id, model, model_config)
 );
 
 -- Votes table
@@ -35,6 +36,7 @@ CREATE TABLE votes (
 CREATE INDEX idx_ascii_outputs_model ON ascii_outputs(model);
 CREATE INDEX idx_ascii_outputs_prompt_id ON ascii_outputs(prompt_id);
 CREATE INDEX idx_ascii_outputs_elo ON ascii_outputs(elo_rating DESC);
+CREATE INDEX idx_ascii_outputs_model_config ON ascii_outputs(model, model_config);
 CREATE INDEX idx_votes_created_at ON votes(created_at DESC);
 
 -- RLS Policies
