@@ -7,6 +7,15 @@ type AsciiOutput = {
   model: string;
   ascii_art: string;
   prompt_id: string;
+  model_config?: string;
+  metadata?: {
+    reasoning_config?: {
+      max_tokens?: number;
+    };
+    max_tokens?: number;
+    provider?: string;
+    [key: string]: any;
+  };
 };
 
 type Prompt = {
@@ -19,6 +28,8 @@ export default function Home() {
   const [outputB, setOutputB] = useState<AsciiOutput | null>(null);
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showingResults, setShowingResults] = useState(false);
+  const [winnerId, setWinnerId] = useState<string | null>(null);
 
   // Calculate appropriate font size based on ASCII art dimensions
   const calculateFontSize = (ascii: string) => {
@@ -65,7 +76,7 @@ export default function Home() {
     }
   };
 
-  const handleVote = async (winnerId: string) => {
+  const handleVote = async (selectedWinnerId: string) => {
     if (!outputA || !outputB) return;
 
     try {
@@ -77,7 +88,7 @@ export default function Home() {
         body: JSON.stringify({
           output_a_id: outputA.id,
           output_b_id: outputB.id,
-          winner_id: winnerId,
+          winner_id: selectedWinnerId,
         }),
       });
 
@@ -86,8 +97,15 @@ export default function Home() {
         return;
       }
 
-      // Load next pair
-      fetchRandomPair();
+      // Show results for 4 seconds before loading next pair
+      setWinnerId(selectedWinnerId);
+      setShowingResults(true);
+
+      setTimeout(() => {
+        setShowingResults(false);
+        setWinnerId(null);
+        fetchRandomPair();
+      }, 4000);
     } catch (error) {
       console.error('Error recording vote:', error);
     }
@@ -125,7 +143,27 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Option A */}
           <div className="flex flex-col gap-4">
-            <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
+            {showingResults && outputA && (
+              <div className="text-center py-2">
+                <p className="font-bold text-lg">{outputA.model}</p>
+                <p className="text-sm text-gray-600">Config: {outputA.model_config || 'default'}</p>
+                {outputA.metadata?.reasoning_config && (
+                  <p className="text-sm text-blue-600 font-semibold">
+                    ⚡ Extended Thinking (max: {outputA.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                  </p>
+                )}
+                {outputA.metadata?.max_tokens && (
+                  <p className="text-xs text-gray-500">Max tokens: {outputA.metadata.max_tokens}</p>
+                )}
+              </div>
+            )}
+            <div className={`border-2 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white transition-colors overflow-hidden ${
+              showingResults
+                ? winnerId === outputA?.id
+                  ? 'border-green-500 border-4'
+                  : 'border-red-400 border-4'
+                : 'border-gray-300 hover:border-blue-400 cursor-pointer'
+            }`}>
               {loading || !outputA ? (
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
               ) : (
@@ -137,7 +175,7 @@ export default function Home() {
             <div className="flex justify-center">
               <button
                 onClick={() => outputA && handleVote(outputA.id)}
-                disabled={loading || !outputA}
+                disabled={loading || !outputA || showingResults}
                 className="w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Vote A
@@ -147,7 +185,27 @@ export default function Home() {
 
           {/* Option B */}
           <div className="flex flex-col gap-4">
-            <div className="border-2 border-gray-300 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white hover:border-blue-400 transition-colors cursor-pointer overflow-hidden">
+            {showingResults && outputB && (
+              <div className="text-center py-2">
+                <p className="font-bold text-lg">{outputB.model}</p>
+                <p className="text-sm text-gray-600">Config: {outputB.model_config || 'default'}</p>
+                {outputB.metadata?.reasoning_config && (
+                  <p className="text-sm text-blue-600 font-semibold">
+                    ⚡ Extended Thinking (max: {outputB.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                  </p>
+                )}
+                {outputB.metadata?.max_tokens && (
+                  <p className="text-xs text-gray-500">Max tokens: {outputB.metadata.max_tokens}</p>
+                )}
+              </div>
+            )}
+            <div className={`border-2 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white transition-colors overflow-hidden ${
+              showingResults
+                ? winnerId === outputB?.id
+                  ? 'border-green-500 border-4'
+                  : 'border-red-400 border-4'
+                : 'border-gray-300 hover:border-blue-400 cursor-pointer'
+            }`}>
               {loading || !outputB ? (
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
               ) : (
@@ -159,7 +217,7 @@ export default function Home() {
             <div className="flex justify-center">
               <button
                 onClick={() => outputB && handleVote(outputB.id)}
-                disabled={loading || !outputB}
+                disabled={loading || !outputB || showingResults}
                 className="w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Vote B
@@ -172,7 +230,7 @@ export default function Home() {
         <div className="flex justify-center">
           <button
             onClick={() => fetchRandomPair()}
-            disabled={loading}
+            disabled={loading || showingResults}
             className="w-full sm:w-auto px-8 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Skip
