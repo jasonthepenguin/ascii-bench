@@ -1,7 +1,27 @@
 # ELO Rating System
 
 ## Overview
-This project uses a dynamic K-factor ELO rating system to rank ASCII art outputs from different models.
+This project uses a dynamic K-factor ELO rating system to rank AI models based on their ASCII art generation quality. Ratings are tracked at the **model level**, not individual output level.
+
+## Database Architecture
+
+### Tables
+- **`models`** - One row per model/config combo, stores ELO rating and vote count
+- **`ascii_outputs`** - Individual ASCII art outputs, references models table
+- **`votes`** - Vote history (which outputs were compared, who won)
+- **`prompts`** - Prompts used to generate ASCII art
+
+### Model-Level Ratings
+When a user votes between two ASCII outputs:
+1. The system identifies which **models** generated those outputs
+2. Updates the **model's** ELO rating (not the individual output)
+3. One model can have many outputs (one per prompt), but only one ELO rating
+
+**Example:**
+- GPT-4 generates ASCII art for 35 different prompts
+- Users vote on various GPT-4 outputs across different matchups
+- All votes update **GPT-4's single ELO rating**
+- Leaderboard shows GPT-4's overall performance across all prompts
 
 ## How It Works
 
@@ -40,12 +60,13 @@ New_Rating_Loser = Old_Rating + K_loser * (0 - Expected_Loser)
 ### 3. Vote Flow
 
 1. User votes for output A or B
-2. API calls `update_elo_ratings(winner_id, loser_id)` PostgreSQL function
+2. API calls `update_elo_ratings(winner_output_id, loser_output_id)` PostgreSQL function
 3. Function:
-   - Calculates dynamic K-factors for both outputs
+   - Looks up which models generated those outputs
+   - Calculates dynamic K-factors for both models
    - Computes expected win probabilities
-   - Updates ELO ratings
-   - Increments vote counts
+   - Updates model ELO ratings
+   - Increments model vote counts
 4. Vote is recorded in `votes` table
 5. New ratings returned to client
 

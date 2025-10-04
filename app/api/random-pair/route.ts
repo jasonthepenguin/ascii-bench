@@ -32,10 +32,19 @@ export async function GET() {
       );
     }
 
-    // Step 4: Get outputs for this prompt
+    // Step 4: Get outputs for this prompt with model info
     const { data: outputs, error: outputsError } = await supabase
       .from('ascii_outputs')
-      .select('*')
+      .select(`
+        *,
+        models:model_id (
+          model_name,
+          model_config,
+          elo_rating,
+          vote_count,
+          metadata
+        )
+      `)
       .eq('prompt_id', selectedPrompt.id);
 
     if (outputsError || !outputs || outputs.length < 2) {

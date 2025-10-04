@@ -29,8 +29,8 @@ export async function POST(request: Request) {
     const { data: eloData, error: eloError } = await supabase.rpc(
       'update_elo_ratings',
       {
-        p_winner_id: winner_id,
-        p_loser_id: loser_id,
+        p_winner_output_id: winner_id,
+        p_loser_output_id: loser_id,
       }
     );
 

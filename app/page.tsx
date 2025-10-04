@@ -4,17 +4,21 @@ import { useEffect, useState } from 'react';
 
 type AsciiOutput = {
   id: string;
-  model: string;
   ascii_art: string;
   prompt_id: string;
-  model_config?: string;
-  metadata?: {
-    reasoning_config?: {
+  models: {
+    model_name: string;
+    model_config: string;
+    elo_rating: number;
+    vote_count: number;
+    metadata?: {
+      reasoning_config?: {
+        max_tokens?: number;
+      };
       max_tokens?: number;
+      provider?: string;
+      [key: string]: any;
     };
-    max_tokens?: number;
-    provider?: string;
-    [key: string]: any;
   };
 };
 
@@ -145,15 +149,15 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             {showingResults && outputA && (
               <div className="text-center py-2">
-                <p className="font-bold text-lg">{outputA.model}</p>
-                <p className="text-sm text-gray-600">Config: {outputA.model_config || 'default'}</p>
-                {outputA.metadata?.reasoning_config && (
+                <p className="font-bold text-lg">{outputA.models.model_name}</p>
+                <p className="text-sm text-gray-600">Config: {outputA.models.model_config || 'default'}</p>
+                {outputA.models.metadata?.reasoning_config && (
                   <p className="text-sm text-gray-600 font-semibold">
-                    Extended Thinking (max: {outputA.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                    Extended Thinking (max: {outputA.models.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
                   </p>
                 )}
-                {outputA.metadata?.max_tokens && (
-                  <p className="text-xs text-gray-500">Max tokens: {outputA.metadata.max_tokens}</p>
+                {outputA.models.metadata?.max_tokens && (
+                  <p className="text-xs text-gray-500">Max tokens: {outputA.models.metadata.max_tokens}</p>
                 )}
               </div>
             )}
@@ -187,15 +191,15 @@ export default function Home() {
           <div className="flex flex-col gap-4">
             {showingResults && outputB && (
               <div className="text-center py-2">
-                <p className="font-bold text-lg">{outputB.model}</p>
-                <p className="text-sm text-gray-600">Config: {outputB.model_config || 'default'}</p>
-                {outputB.metadata?.reasoning_config && (
+                <p className="font-bold text-lg">{outputB.models.model_name}</p>
+                <p className="text-sm text-gray-600">Config: {outputB.models.model_config || 'default'}</p>
+                {outputB.models.metadata?.reasoning_config && (
                   <p className="text-sm text-gray-600 font-semibold">
-                    Extended Thinking (max: {outputB.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                    Extended Thinking (max: {outputB.models.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
                   </p>
                 )}
-                {outputB.metadata?.max_tokens && (
-                  <p className="text-xs text-gray-500">Max tokens: {outputB.metadata.max_tokens}</p>
+                {outputB.models.metadata?.max_tokens && (
+                  <p className="text-xs text-gray-500">Max tokens: {outputB.models.metadata.max_tokens}</p>
                 )}
               </div>
             )}
