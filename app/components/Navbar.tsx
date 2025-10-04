@@ -8,7 +8,7 @@ export default function Navbar() {
           ASCII Bench
         </Link>
         <div className="flex gap-8">
-          <Link href="/vote" className="hover:text-gray-600 transition-colors">
+          <Link href="/" className="hover:text-gray-600 transition-colors">
             Vote
           </Link>
           <Link href="/leaderboard" className="hover:text-gray-600 transition-colors">
