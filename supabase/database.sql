@@ -156,3 +156,30 @@ BEGIN
   RETURN QUERY SELECT new_winner_elo, new_loser_elo;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Function to reset all ELO ratings and votes (for testing)
+-- WARNING: This deletes all votes and resets all model ratings to 1500
+CREATE OR REPLACE FUNCTION reset_elo_system()
+RETURNS TABLE(models_reset INTEGER, votes_deleted INTEGER) 
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_models_reset INTEGER;
+  v_votes_deleted INTEGER;
+BEGIN
+  -- Delete all votes
+  DELETE FROM votes;
+  GET DIAGNOSTICS v_votes_deleted = ROW_COUNT;
+  
+  -- Reset all model ratings and vote counts
+  UPDATE models
+  SET 
+    elo_rating = 1500,
+    vote_count = 0;
+  GET DIAGNOSTICS v_models_reset = ROW_COUNT;
+  
+  -- Return counts
+  RETURN QUERY SELECT v_models_reset, v_votes_deleted;
+END;
+$$ LANGUAGE plpgsql;
