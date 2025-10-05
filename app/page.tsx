@@ -35,6 +35,7 @@ export default function Home() {
   const [showingResults, setShowingResults] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [votingInProgress, setVotingInProgress] = useState(false);
 
   // Calculate appropriate font size based on ASCII art dimensions
   const calculateFontSize = (ascii: string) => {
@@ -82,10 +83,11 @@ export default function Home() {
   };
 
   const handleVote = async (selectedWinnerId: string) => {
-    if (!outputA || !outputB) return;
+    if (!outputA || !outputB || votingInProgress) return;
 
-    // Clear any previous error
+    // Clear any previous error and set voting in progress
     setErrorMessage(null);
+    setVotingInProgress(true);
 
     try {
       const response = await fetch('/api/vote', {
@@ -111,6 +113,7 @@ export default function Home() {
 
         // Clear error after 5 seconds
         setTimeout(() => setErrorMessage(null), 5000);
+        setVotingInProgress(false);
         return;
       }
 
@@ -121,12 +124,14 @@ export default function Home() {
       setTimeout(() => {
         setShowingResults(false);
         setWinnerId(null);
+        setVotingInProgress(false);
         fetchRandomPair();
       }, 4000);
     } catch (error) {
       console.error('Error recording vote:', error);
       setErrorMessage('Network error. Please check your connection.');
       setTimeout(() => setErrorMessage(null), 5000);
+      setVotingInProgress(false);
     }
   };
 
@@ -201,10 +206,22 @@ export default function Home() {
             <div className="flex justify-center">
               <button
                 onClick={() => outputA && handleVote(outputA.id)}
-                disabled={loading || !outputA || showingResults}
-                className="w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || !outputA || showingResults || votingInProgress}
+                className={`w-auto px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                  votingInProgress && winnerId === outputA?.id ? 'scale-95 bg-blue-800' : ''
+                }`}
               >
-                Vote A
+                {votingInProgress && winnerId === outputA?.id ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Voting...
+                  </span>
+                ) : (
+                  'Vote A'
+                )}
               </button>
             </div>
           </div>
@@ -243,10 +260,22 @@ export default function Home() {
             <div className="flex justify-center">
               <button
                 onClick={() => outputB && handleVote(outputB.id)}
-                disabled={loading || !outputB || showingResults}
-                className="w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || !outputB || showingResults || votingInProgress}
+                className={`w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                  votingInProgress && winnerId === outputB?.id ? 'scale-95 bg-green-800' : ''
+                }`}
               >
-                Vote B
+                {votingInProgress && winnerId === outputB?.id ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Voting...
+                  </span>
+                ) : (
+                  'Vote B'
+                )}
               </button>
             </div>
           </div>
