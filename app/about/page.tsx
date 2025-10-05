@@ -29,7 +29,7 @@ export default function About() {
 
         {/* Creator Section */}
         <div className="bg-white border-2 border-gray-300 rounded-lg p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Jason */}
             <div className="flex flex-col items-center">
               <h2 className="text-xl font-semibold mb-2 text-black">Creator</h2>
@@ -45,20 +45,52 @@ export default function About() {
                 />
               </div>
               <p className="text-xl font-semibold mb-2">Jason Botterill</p>
-              <Link 
-                href="https://x.com/JasonBotterill3" 
+              <Link
+                href="https://x.com/JasonBotterill3"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 transition-colors text-lg flex items-center gap-2"
               >
-                <svg 
-                  className="w-5 h-5" 
-                  fill="currentColor" 
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
                 @JasonBotterill3
+              </Link>
+            </div>
+
+            {/* Chris */}
+            <div className="flex flex-col items-center">
+              <h2 className="text-xl font-semibold mb-2 text-black">Owns 10%</h2>
+              <pre className="text-2xl mb-4 text-gray-800">
+{`( ͡ಠ ͜ʖ ͡ಠ)`}
+              </pre>
+              <div className="mb-4 relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300">
+                <Image
+                  src="/chris.jpg"
+                  alt="Chris"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <p className="text-xl font-semibold mb-2">Chris</p>
+              <Link
+                href="https://x.com/chatgpt21"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 transition-colors text-lg flex items-center gap-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                @chatgpt21
               </Link>
             </div>
 
@@ -77,15 +109,15 @@ export default function About() {
                 />
               </div>
               <p className="text-xl font-semibold mb-2">Angel</p>
-              <Link 
-                href="https://x.com/Angaisb_" 
+              <Link
+                href="https://x.com/Angaisb_"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 transition-colors text-lg flex items-center gap-2"
               >
-                <svg 
-                  className="w-5 h-5" 
-                  fill="currentColor" 
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
