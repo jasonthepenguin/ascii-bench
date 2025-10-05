@@ -34,6 +34,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showingResults, setShowingResults] = useState(false);
   const [winnerId, setWinnerId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Calculate appropriate font size based on ASCII art dimensions
   const calculateFontSize = (ascii: string) => {
@@ -83,6 +84,9 @@ export default function Home() {
   const handleVote = async (selectedWinnerId: string) => {
     if (!outputA || !outputB) return;
 
+    // Clear any previous error
+    setErrorMessage(null);
+
     try {
       const response = await fetch('/api/vote', {
         method: 'POST',
@@ -97,7 +101,16 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        console.error('Error recording vote');
+        const errorData = await response.json();
+
+        if (response.status === 429) {
+          setErrorMessage('Rate limit exceeded! Please slow down and try again in a minute.');
+        } else {
+          setErrorMessage('Error recording vote. Please try again.');
+        }
+
+        // Clear error after 5 seconds
+        setTimeout(() => setErrorMessage(null), 5000);
         return;
       }
 
@@ -112,6 +125,8 @@ export default function Home() {
       }, 4000);
     } catch (error) {
       console.error('Error recording vote:', error);
+      setErrorMessage('Network error. Please check your connection.');
+      setTimeout(() => setErrorMessage(null), 5000);
     }
   };
 
@@ -129,6 +144,13 @@ export default function Home() {
       </div>
 
       <div className="w-full max-w-6xl">
+        {/* Error message */}
+        {errorMessage && (
+          <div className="mb-6 mx-auto max-w-2xl bg-red-100 border-2 border-red-400 text-red-700 px-6 py-4 rounded-lg text-center animate-pulse">
+            <p className="font-semibold">{errorMessage}</p>
+          </div>
+        )}
+
         {/* Prompt box */}
         <div className="mb-8 text-center">
           <p className="mb-4 text-lg text-gray-600">Which model did it better?</p>

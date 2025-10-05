@@ -1,8 +1,36 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { votingRateLimit } from '@/lib/ratelimit';
 
 export async function POST(request: Request) {
   try {
+    // Get IP address for rate limiting
+    const ip = request.headers.get('x-forwarded-for') ||
+               request.headers.get('x-real-ip') ||
+               'unknown';
+
+    // Check rate limit
+    const { success, limit, reset, remaining } = await votingRateLimit.limit(ip);
+
+    if (!success) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded. Please try again later.',
+          limit,
+          reset: new Date(reset).toISOString(),
+          remaining
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': remaining.toString(),
+            'X-RateLimit-Reset': reset.toString(),
+          }
+        }
+      );
+    }
+
     const body = await request.json();
     const { output_a_id, output_b_id, winner_id } = body;
 
