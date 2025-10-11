@@ -94,7 +94,7 @@ export default function LeaderboardPage() {
         ) : (
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Header */}
-            <div className="bg-gray-100 border-b border-gray-200 px-6 py-4">
+            <div className="hidden sm:block bg-gray-100 border-b border-gray-200 px-6 py-4">
               <div className="grid grid-cols-12 gap-4 font-semibold text-gray-700">
                 <div className="col-span-1 text-center">Rank</div>
                 <div className="col-span-4">Model</div>
@@ -116,14 +116,16 @@ export default function LeaderboardPage() {
                       rank <= 3 ? 'bg-amber-50/30' : ''
                     }`}
                   >
-                    <div className="grid grid-cols-12 gap-4 items-center">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-12 sm:gap-4 sm:items-center">
                       {/* Rank */}
-                      <div className={`col-span-1 text-center text-lg ${getRankColor(rank)}`}>
+                      <div
+                        className={`flex items-center text-lg ${getRankColor(rank)} sm:col-span-1 sm:block sm:text-center`}
+                      >
                         {getRankMedal(rank)}
                       </div>
 
                       {/* Model Name */}
-                      <div className="col-span-4">
+                      <div className="sm:col-span-4">
                         <p className="font-semibold text-gray-900">{entry.model_name}</p>
                         {entry.metadata?.provider && (
                           <p className="text-xs text-gray-500">
@@ -132,25 +134,25 @@ export default function LeaderboardPage() {
                         )}
                       </div>
 
-                      {/* Config */}
-                      <div className="col-span-2 text-center">
+                      {/* Desktop Config */}
+                      <div className="hidden sm:flex sm:col-span-2 sm:justify-center">
                         <span className="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
                           {entry.model_config || 'default'}
                         </span>
                       </div>
 
-                      {/* ELO Rating */}
-                      <div className="col-span-2 text-center">
+                      {/* Desktop ELO Rating */}
+                      <div className="hidden sm:flex sm:col-span-2 sm:justify-center">
                         <p className="text-xl font-bold text-blue-600">{entry.elo_rating}</p>
                       </div>
 
-                      {/* Vote Count */}
-                      <div className="col-span-2 text-center">
+                      {/* Desktop Vote Count */}
+                      <div className="hidden sm:flex sm:col-span-2 sm:justify-center">
                         <p className="text-gray-700">{entry.vote_count}</p>
                       </div>
 
-                      {/* Extended Thinking Badge */}
-                      <div className="col-span-1 text-center">
+                      {/* Desktop Extended Thinking Badge */}
+                      <div className="hidden sm:flex sm:col-span-1 sm:justify-center">
                         {entry.metadata?.reasoning_config && (
                           <span
                             className="inline-block text-xs"
@@ -159,6 +161,30 @@ export default function LeaderboardPage() {
                             🧠
                           </span>
                         )}
+                      </div>
+
+                      {/* Mobile Stats */}
+                      <div className="grid grid-cols-2 gap-3 sm:hidden">
+                        <div className="flex flex-col">
+                          <span className="text-xs uppercase tracking-wide text-gray-500">Config</span>
+                          <span className="mt-1 inline-block w-fit px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                            {entry.model_config || 'default'}
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs uppercase tracking-wide text-gray-500">ELO</span>
+                          <span className="mt-1 text-base font-semibold text-blue-600">{entry.elo_rating}</span>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs uppercase tracking-wide text-gray-500">Votes</span>
+                          <span className="mt-1 text-base font-semibold text-gray-700">{entry.vote_count}</span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs uppercase tracking-wide text-gray-500">Info</span>
+                          <span className="mt-1 text-base">
+                            {entry.metadata?.reasoning_config ? '🧠' : '—'}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -187,4 +213,3 @@ export default function LeaderboardPage() {
     </main>
   );
 }
-
