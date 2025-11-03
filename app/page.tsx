@@ -143,9 +143,16 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center pt-12 p-6">
       <div className="mb-12 text-center">
         <h1 className="text-6xl font-bold mb-4">ASCII Bench</h1>
-        <pre className="text-4xl font-bold text-gray-800">
+        <div className="relative inline-block pt-16">
+          <img
+            src="/santa.png"
+            alt="Santa hat"
+            className="absolute -top-6 left-1/2 -translate-x-[60%] w-28 h-28 object-contain z-10"
+          />
+          <pre className="text-4xl font-bold text-gray-800 relative">
 {`( ͡° ͜ʖ ͡°) `}
-        </pre>
+          </pre>
+        </div>
       </div>
 
       <div className="w-full max-w-6xl">
