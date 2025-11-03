@@ -95,13 +95,12 @@ export default function LeaderboardPage() {
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             {/* Header */}
             <div className="hidden sm:block bg-gray-100 border-b border-gray-200 px-6 py-4">
-              <div className="grid grid-cols-12 gap-4 font-semibold text-gray-700">
+              <div className="grid grid-cols-11 gap-4 font-semibold text-gray-700">
                 <div className="col-span-1 text-center">Rank</div>
                 <div className="col-span-4">Model</div>
                 <div className="col-span-2 text-center">Config</div>
                 <div className="col-span-2 text-center">ELO Rating</div>
                 <div className="col-span-2 text-center">Votes</div>
-                <div className="col-span-1 text-center">Info</div>
               </div>
             </div>
 
@@ -116,7 +115,7 @@ export default function LeaderboardPage() {
                       rank <= 3 ? 'bg-amber-50/30' : ''
                     }`}
                   >
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-12 sm:gap-4 sm:items-center">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-11 sm:gap-4 sm:items-center">
                       {/* Rank */}
                       <div
                         className={`flex items-center text-lg ${getRankColor(rank)} sm:col-span-1 sm:block sm:text-center`}
@@ -151,39 +150,21 @@ export default function LeaderboardPage() {
                         <p className="text-gray-700">{entry.vote_count}</p>
                       </div>
 
-                      {/* Desktop Extended Thinking Badge */}
-                      <div className="hidden sm:flex sm:col-span-1 sm:justify-center">
-                        {entry.metadata?.reasoning_config && (
-                          <span
-                            className="inline-block text-xs"
-                            title={`Extended Thinking (${entry.metadata.reasoning_config.max_tokens || 'N/A'} tokens)`}
-                          >
-                            🧠
-                          </span>
-                        )}
-                      </div>
-
                       {/* Mobile Stats */}
-                      <div className="grid grid-cols-2 gap-3 sm:hidden">
+                      <div className="grid grid-cols-3 gap-3 sm:hidden">
                         <div className="flex flex-col">
                           <span className="text-xs uppercase tracking-wide text-gray-500">Config</span>
                           <span className="mt-1 inline-block w-fit px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
                             {entry.model_config || 'default'}
                           </span>
                         </div>
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-center">
                           <span className="text-xs uppercase tracking-wide text-gray-500">ELO</span>
                           <span className="mt-1 text-base font-semibold text-blue-600">{entry.elo_rating}</span>
                         </div>
-                        <div className="flex flex-col">
+                        <div className="flex flex-col items-end">
                           <span className="text-xs uppercase tracking-wide text-gray-500">Votes</span>
                           <span className="mt-1 text-base font-semibold text-gray-700">{entry.vote_count}</span>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <span className="text-xs uppercase tracking-wide text-gray-500">Info</span>
-                          <span className="mt-1 text-base">
-                            {entry.metadata?.reasoning_config ? '🧠' : '—'}
-                          </span>
                         </div>
                       </div>
                     </div>
