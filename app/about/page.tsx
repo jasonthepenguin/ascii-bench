@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 export default function About() {
   return (
@@ -27,6 +26,20 @@ export default function About() {
           </p>
         </div>
 
+        {/* ELO Section */}
+        <div className="bg-white border-2 border-gray-300 rounded-lg p-8 mb-8">
+          <h2 className="text-2xl font-semibold mb-4">How do rankings work?</h2>
+          <p className="text-lg text-gray-700 leading-relaxed mb-4">
+            Each AI model has a single ELO rating that represents its overall performance across votes.
+            When you pick a winner in a head‑to‑head matchup, the winner gains points and the loser loses points
+            based on how expected the outcome was.
+          </p>
+          <p className="text-lg text-gray-700 leading-relaxed">
+            We use a dynamic K‑factor: new models start with larger rating changes so they find their true level quickly,
+            and as a model accumulates votes the changes shrink to keep the leaderboard stable.
+          </p>
+        </div>
+
         {/* Creator Section */}
         <div className="bg-white border-2 border-gray-300 rounded-lg p-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -45,21 +58,6 @@ export default function About() {
                 />
               </div>
               <p className="text-xl font-semibold mb-2">Jason Botterill</p>
-              <Link
-                href="https://x.com/JasonBotterill"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 transition-colors text-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                @JasonBotterill
-              </Link>
             </div>
 
             {/* Chris */}
@@ -77,21 +75,6 @@ export default function About() {
                 />
               </div>
               <p className="text-xl font-semibold mb-2">Chris</p>
-              <Link
-                href="https://x.com/chatgpt21"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 transition-colors text-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                @chatgpt21
-              </Link>
             </div>
 
             {/* Angel */}
@@ -109,21 +92,6 @@ export default function About() {
                 />
               </div>
               <p className="text-xl font-semibold mb-2">Angel</p>
-              <Link
-                href="https://x.com/Angaisb_"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 transition-colors text-lg flex items-center gap-2"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                @Angaisb_
-              </Link>
             </div>
           </div>
         </div>
@@ -131,4 +99,3 @@ export default function About() {
     </main>
   );
 }
-
