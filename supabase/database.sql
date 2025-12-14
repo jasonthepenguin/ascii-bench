@@ -59,8 +59,8 @@ CREATE POLICY "Public read models" ON models FOR SELECT USING (true);
 CREATE POLICY "Public read ascii_outputs" ON ascii_outputs FOR SELECT USING (true);
 CREATE POLICY "Public read votes" ON votes FOR SELECT USING (true);
 
--- Public can insert votes (for anonymous voting)
-CREATE POLICY "Public insert votes" ON votes FOR INSERT WITH CHECK (true);
+-- Votes can only be inserted via server-side API (using secret key)
+-- No public insert policy - anon cannot insert directly
 
 -- Only authenticated users can insert/update
 CREATE POLICY "Authenticated insert prompts" ON prompts FOR INSERT TO authenticated WITH CHECK (true);
@@ -183,3 +183,7 @@ BEGIN
   RETURN QUERY SELECT v_models_reset, v_votes_deleted;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Security: Revoke anon write access (votes go through server-side API only)
+REVOKE INSERT ON votes FROM anon;
+REVOKE EXECUTE ON FUNCTION update_elo_ratings FROM anon;
