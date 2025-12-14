@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseServer } from '@/lib/supabase';
 import { votingRateLimit } from '@/lib/ratelimit';
 
 export async function POST(request: Request) {
@@ -54,7 +54,8 @@ export async function POST(request: Request) {
     const loser_id = winner_id === output_a_id ? output_b_id : output_a_id;
 
     // Update ELO ratings using the database function
-    const { data: eloData, error: eloError } = await supabase.rpc(
+    const supabaseServer = getSupabaseServer();
+    const { data: eloData, error: eloError } = await supabaseServer.rpc(
       'update_elo_ratings',
       {
         p_winner_output_id: winner_id,
@@ -71,7 +72,7 @@ export async function POST(request: Request) {
     }
 
     // Record the vote
-    const { error: voteError } = await supabase.from('votes').insert({
+    const { error: voteError } = await supabaseServer.from('votes').insert({
       output_a_id,
       output_b_id,
       winner_id,
