@@ -170,24 +170,48 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Model details row - shown after voting */}
+        {showingResults && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+            <div className="text-center py-2">
+              {outputA && (
+                <>
+                  <p className="font-bold text-lg">{outputA.models.model_name}</p>
+                  <p className="text-sm text-gray-600">Config: {outputA.models.model_config || 'default'}</p>
+                  {outputA.models.metadata?.reasoning_config && (
+                    <p className="text-sm text-gray-600 font-semibold">
+                      Extended Thinking (max: {outputA.models.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                    </p>
+                  )}
+                  {outputA.models.metadata?.max_tokens && (
+                    <p className="text-xs text-gray-500">Max tokens: {outputA.models.metadata.max_tokens}</p>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="text-center py-2">
+              {outputB && (
+                <>
+                  <p className="font-bold text-lg">{outputB.models.model_name}</p>
+                  <p className="text-sm text-gray-600">Config: {outputB.models.model_config || 'default'}</p>
+                  {outputB.models.metadata?.reasoning_config && (
+                    <p className="text-sm text-gray-600 font-semibold">
+                      Extended Thinking (max: {outputB.models.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
+                    </p>
+                  )}
+                  {outputB.models.metadata?.max_tokens && (
+                    <p className="text-xs text-gray-500">Max tokens: {outputB.models.metadata.max_tokens}</p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Two option boxes side by side */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Option A */}
           <div className="flex flex-col gap-4">
-            {showingResults && outputA && (
-              <div className="text-center py-2">
-                <p className="font-bold text-lg">{outputA.models.model_name}</p>
-                <p className="text-sm text-gray-600">Config: {outputA.models.model_config || 'default'}</p>
-                {outputA.models.metadata?.reasoning_config && (
-                  <p className="text-sm text-gray-600 font-semibold">
-                    Extended Thinking (max: {outputA.models.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
-                  </p>
-                )}
-                {outputA.models.metadata?.max_tokens && (
-                  <p className="text-xs text-gray-500">Max tokens: {outputA.models.metadata.max_tokens}</p>
-                )}
-              </div>
-            )}
             <div className={`border-2 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white transition-colors overflow-hidden ${
               showingResults
                 ? winnerId === outputA?.id
@@ -228,20 +252,6 @@ export default function Home() {
 
           {/* Option B */}
           <div className="flex flex-col gap-4">
-            {showingResults && outputB && (
-              <div className="text-center py-2">
-                <p className="font-bold text-lg">{outputB.models.model_name}</p>
-                <p className="text-sm text-gray-600">Config: {outputB.models.model_config || 'default'}</p>
-                {outputB.models.metadata?.reasoning_config && (
-                  <p className="text-sm text-gray-600 font-semibold">
-                    Extended Thinking (max: {outputB.models.metadata.reasoning_config.max_tokens || 'N/A'} tokens)
-                  </p>
-                )}
-                {outputB.models.metadata?.max_tokens && (
-                  <p className="text-xs text-gray-500">Max tokens: {outputB.models.metadata.max_tokens}</p>
-                )}
-              </div>
-            )}
             <div className={`border-2 rounded-lg p-8 h-[400px] flex items-center justify-center bg-white transition-colors overflow-hidden ${
               showingResults
                 ? winnerId === outputB?.id
