@@ -85,7 +85,7 @@ The project uses a PostgreSQL database with four main tables:
 - **`prompts`**: Text prompts used to generate ASCII art
 - **`votes`**: Vote history with winner/loser tracking
 
-The browser uses Supabase's anon key for read-only access. Vote submissions go through `POST /api/vote`, which uses the server-only Supabase key to call the ELO update function and insert vote records.
+The browser uses Supabase's anon key for read-only access. Vote submissions go through `POST /api/vote`, which uses the server-only Supabase key to call a single transactional vote function that inserts the vote record and updates ELO ratings together.
 
 See [supabase/database.sql](supabase/database.sql) for the complete schema and [ELO_SYSTEM.md](ELO_SYSTEM.md) for detailed information about the rating algorithm.
 

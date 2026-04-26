@@ -47,7 +47,7 @@ K = max(K, min_K)
 
 ### 2. ELO Calculation
 
-Standard ELO formula with individual K-factors per output:
+Standard ELO formula with individual K-factors per model:
 
 ```
 Expected_A = 1 / (1 + 10^((Rating_B - Rating_A) / 400))
@@ -60,14 +60,15 @@ New_Rating_Loser = Old_Rating + K_loser * (0 - Expected_Loser)
 ### 3. Vote Flow
 
 1. User votes for output A or B
-2. API calls `update_elo_ratings(winner_output_id, loser_output_id)` PostgreSQL function
+2. API calls the transactional `record_vote(output_a_id, output_b_id, winner_id, voter_ip)` PostgreSQL function
 3. Function:
    - Looks up which models generated those outputs
+   - Validates that the compared outputs are distinct and belong to the same prompt
    - Calculates dynamic K-factors for both models
    - Computes expected win probabilities
    - Updates model ELO ratings
    - Increments model vote counts
-4. Vote is recorded in `votes` table
+4. Vote is recorded in `votes` table in the same transaction
 5. New ratings returned to client
 
 ## Why This Approach?

@@ -3,26 +3,45 @@ import { supabase } from '@/lib/supabase';
 
 export async function GET() {
   try {
-    // Step 1: Get only prompt IDs to minimize data transfer
-    const { data: allPrompts, error: promptError } = await supabase
-      .from('prompts')
-      .select('id');
+    // Step 1: Build the candidate prompt list from outputs so every
+    // selected prompt can actually produce a pair.
+    const { data: outputPromptRefs, error: promptRefsError } = await supabase
+      .from('ascii_outputs')
+      .select('prompt_id');
 
-    if (promptError || !allPrompts || allPrompts.length === 0) {
+    if (promptRefsError || !outputPromptRefs || outputPromptRefs.length === 0) {
       return NextResponse.json(
-        { error: 'No prompts found' },
+        { error: 'No outputs found' },
         { status: 404 }
       );
     }
 
-    // Step 2: Pick random prompt (client-side is fine for small datasets)
-    const randomPrompt = allPrompts[Math.floor(Math.random() * allPrompts.length)];
+    const outputCountsByPrompt = outputPromptRefs.reduce<Record<string, number>>((counts, row) => {
+      if (row.prompt_id) {
+        counts[row.prompt_id] = (counts[row.prompt_id] || 0) + 1;
+      }
+      return counts;
+    }, {});
+
+    const eligiblePromptIds = Object.entries(outputCountsByPrompt)
+      .filter(([, outputCount]) => outputCount >= 2)
+      .map(([promptId]) => promptId);
+
+    if (eligiblePromptIds.length === 0) {
+      return NextResponse.json(
+        { error: 'No prompts with enough outputs found' },
+        { status: 404 }
+      );
+    }
+
+    // Step 2: Pick random eligible prompt (client-side is fine for small datasets)
+    const randomPromptId = eligiblePromptIds[Math.floor(Math.random() * eligiblePromptIds.length)];
 
     // Step 3: Get the full prompt details
     const { data: selectedPrompt, error: promptDetailError } = await supabase
       .from('prompts')
       .select('*')
-      .eq('id', randomPrompt.id)
+      .eq('id', randomPromptId)
       .single();
 
     if (promptDetailError || !selectedPrompt) {
